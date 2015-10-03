@@ -1,0 +1,21 @@
+{
+  "person1" : {
+    "name" : "Stephen",
+    "age" : "25",
+    "location" : "Charleston", 
+    "state" : "SC",
+    "child" : {
+      "Stephen JR " : 12,
+      "Tommy" : 1
+    }
+  },
+  "person2" : {
+    "name" : "Jaime",
+    "age" : "25",
+    "location" : "Floral Park",
+    "state" : "NY",
+    "child" : {
+      "Simon" : 15
+    }
+  }
+}
