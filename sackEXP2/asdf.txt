@@ -1,0 +1,162 @@
+var arr = [];
+var scoreObj = {};
+var li = [];
+var essay = [];
+var textX = 0;
+var colorMood;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(84);
+  loadStrings("sabbath.txt", processData);
+  loadJSON("sackScore.json", displaySent);
+  
+
+}
+
+function processData() {
+  for (var i in arr) {
+    li.push(arr[i].split(" "));
+  }
+  for (i = 0; i < li.length; i++) {
+    essay = Array.prototype.concat.apply([], li);
+  }
+  console.log(essay);
+  // for (var x = 0; x < 20; x++) {
+  //   fill(255, 0, 0);
+  //   textSize(50);
+    
+  //   text(essay[x] + "        ", random(0, windowWidth - 50), random(0, windowHeight - 50));
+  
+  // }
+  fill(255, 0, 0);
+  textSize(20); 
+  // text(essay.join(" "), 30, 30, windowWidth - 50, windowHeight - 50);
+  for (i=0; i < arr.length; i++){
+    li = li.concat(att[i].split(" "));
+  }
+  
+  console.log(li.length);
+  for (var i = 0; i < li.length; i++) {
+    createDiv(li[i] + " ").style("display", "inline").class(scoreObj[li[i]]);
+  };
+
+  // text(essay[1], 10, 50);
+  // text(essay[2], 65, 50);
+}
+
+function displaySent(data) {
+  for (var i in data) {
+    // print("sentiment : " + data[i].tokens)
+    // scoreArr.push([data[i].tokens[0], data[i].score]);
+    scoreObj[data[i].tokens[0]] = data[i].score;
+  }
+
+  print(scoreArr);
+}
+  
+//   arr.forEach(function(el){
+//     console.log("the word" el )
+//   });
+// }
+
+// function displaySent(data) {
+//   for (var i in data) {
+//     // print("sentiment : " + data[i].tokens)
+//     // scoreArr.push([data[i].tokens[0], data[i].score]);
+//     scoreObj[data[i].tokens[0]] = data[i].score;
+//   }
+//   print(scoreObj);
+// }
+
+
+function draw() {
+  background(84);
+
+  // // translate(textX, 0);
+  // // if (scoreArr) {
+  // for (var x = 0; x < essay.length; x++) {
+  //   fill(255);
+  //   textSize(20);
+  // }
+  // // }
+  //   console.log(essay);
+  noLoop();
+}
+
+
+
+
+
+
+
+// if (scoreArr[i][0] == li[i] && scoreArr[i][1] > 0) {
+//   fill(110, 219, 179);
+//   text(essay[i], random(0, windowWidth), random(0, windowHeight));
+// } else if (scoreArr[i][0] == li[i] && scoreArr[i][1] < 0) {
+//   fill(219, 142, 110);
+//   text(essay[i], random(0, windowWidth), random(0, windowHeight));
+// } else if (scoreArr[i][0] == essay[i] && scoreArr[i][1] < 0) {
+//   fill(84);
+//   text(essay[i], random(0, windowWidth), random(0, windowHeight));
+// }
+
+
+
+
+
+
+
+var arr = [];
+var scoreArr = [];
+var scoreObj = {};
+var li = [];
+var essay = [];
+var textX = 0;
+var colorMood;
+
+function setup() {
+  // createCanvas(windowWidth, windowHeight);
+  noCanvas();
+  background(84);
+  loadJSON("sackScore.json", displaySent);
+  loadStrings("sabbath.txt", processData);
+}
+
+function processData(arr) {
+  for (var i in arr) {
+    li.concat(arr[i].split(" "));
+  }
+  for (i = 0; i < li.length; i++) {
+    essay = Array.prototype.concat.apply([], li);
+  }
+  fill(255, 0, 0);
+  textSize(20); 
+
+  // text(essay.join(" "), 30, 30, windowWidth - 50, windowHeight - 50);
+  for (i = 0; i < arr.length; i++) {
+    li = li.concat(arr[i].split(" "));
+  }
+
+  console.log(li.length);
+  for (var i = 0; i < li.length; i++) {
+    createDiv(li[i] + " ").style("display", "inline").class(scoreObj[li[i]]);
+  };
+
+}
+
+function displaySent(data) {
+  for (var i in data) {
+
+    scoreObj[data[i].tokens[0]] = data[i].score;
+  }
+
+  print(scoreArr);
+}
+
+
+function draw() {
+  background(84);
+
+  noLoop();
+}
