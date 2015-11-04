@@ -2,7 +2,11 @@
 // USGS DATA - SOURCE UPDATED EVERY 5 MINUTES
 // JavaScript library available at http://leafletjs.org/
 
-var map; // global
+
+//roboto mono normal-medium weight
+//
+
+var mapp; // global
 var canvas; // p5 canvas
 var quakes = []; // array of earthquakes 
 var mags = [];
@@ -16,129 +20,148 @@ var magnitude; // div for storing min magnitude from slider
 var details;
 var bla;
 var checker = false;
-var quakeDate = [];
+var quakeMinute = [];
 var quakeHour = [];
-var quakeDateAll = [];
+var quakeSecond = [];
 var quakeHourAll = [];
+var holder = [];
+var mappedMag = [];
+var allTime = [];
 
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight); // full window p5 canvas
-  canvas.parent('map'); // make p5 and leaflet use the same canvas (and z-index)
+  canvas.parent('mapp'); // make p5 and leaflet use the same canvas (and z-index)
   initLeaflet(); // load leaflet functions and creat map and defined view
   loadStrings("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.csv", parseSource);
-  loadStrings("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv", parseAll); // load source, parse when done
+  // loadStrings("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv", parseAll); // load source, parse when done
 
   //lower details 
+  details = createDiv('');
+  details.class("there");
+  details.parent("mapp");
+  details.position(width * 0.1, windowHeight * 0.78);
 
+  var timeText = createP("TIME OF EARTHQUAKE");
+  timeText.parent("mapp");
+  timeText.class("text");
+  timeText.style("font-size", "15px");
+  timeText.position(width * 0.14, windowHeight * 0.85);
 
-  // title context
-  var div = createDiv('<b>Earthquakes Today</b>');
-  div.id("top");
-  div.position(30, 35);
+  var depthText = createP("KILOMETERS DEEP");
+  depthText.parent("mapp");
+  depthText.class("text");
+  depthText.style("font-size", "15px");
+  depthText.position(width * 0.37, windowHeight * 0.85);
 
-  // differentiate legend from map
-  var txt = createDiv('');
-  txt.id("top-bg");
-  txt.position(0, 0);
+  var magText = createP("MAGNITUDE");
+  magText.parent("mapp");
+  magText.class("text");
+  magText.style("font-size", "15px");
+  magText.position(width * 0.56, windowHeight * 0.85);
 
-  // UI slider
-  slider = createSlider(0, 10, 1);
-  slider.id("top");
-  slider.position(width - 450, 25);
+  var locText = createP("LONGITUDINAL POSITION");
+  locText.parent("mapp");
+  locText.class("text");
+  locText.style("font-size", "15px");
+  locText.position(width * 0.7, windowHeight * 0.85);
 
-  // slider numeric feedback
-  magnitude = createDiv('Min magnitude: ' + slider.value());
-  magnitude.id("top");
-  magnitude.position(width - 250, 35);
+  var locText = createP("SIGNIFICANT EARTHQUAKES OF LAST 30 DAYS");
+  locText.parent("mapp");
+  locText.class("numbers");
+  locText.style("font-size", "20px");
+  locText.position(width * 0.36, windowHeight * 0.80);
+
 }
 
 function draw() {
-  // hide and show individual quakes by checking against slider threshold
-  for (var i = 1; i < mags.length; i++) {
-    if (mags[i] < slider.value())
-      quakes[i].setRadius(0);
-    else
-      quakes[i].setRadius(mags[i]);
-  }
+  if (checker2) {
+    time = createElement("p", allTime);
+    time.parent("mapp");
+    time.class("text");
+    time.style("font-size", "20px")
+    time.position(width * 0.14, windowHeight * 0.80);
 
-  magnitude.html("Magnitude > " + slider.value() + " RS");
+  }
+  // hide and show individual quakes by checking against slider threshold
+  // for (var i = 1; i < mags.length; i++) {
+  //   if (mags[i] < slider.value())
+  //     quakes[i].setRadius(0);
+  //   else
+  //     quakes[i].setRadius(mags[i]);
+  // }
+
+  // magnitude.html("Magnitude > " + slider.value() + " RS");
+  // noLoop();
 }
 
 
 function parseSource(data) {
+
   for (var i = 1; i < data.length; i++) {
     var row = split(data[i], ","); // split every row by the comma
     mags[i] = row[4];
     depth[i] = row[3];
     timeStamp[i] = row[0];
 
-    quakeDate[i] = new Date(timeStamp[i]).getDate();
+    quakeMinute[i] = new Date(timeStamp[i]).getMinutes();
     quakeHour[i] = new Date(timeStamp[i]).getHours();
+    quakeSecond[i] = new Date(timeStamp[i]).getSeconds();
+    if (quakeMinute[i] < 10) {
+      quakeMinute[i] = ("0" + quakeMinute[i]);
+    }
+    console.log(quakeMinute[i]);
+    allTime[i] = (quakeHour[i] + ":" + quakeMinute[i] + ":" + quakeSecond[i]);
+    // mappedMag = map(mags[i], 0, 10, height * 0.82, height * 0.85);
     // create custom leaflet marker
+    holder[i] = [
+      [row[1], row[2]]
+    ];
     quakes[i] = L.circleMarker([row[1], row[2]], {
       stroke: true,
-      color: '#232323',
-      weight: 1,
-      opacity: 0.3,
-      fillOpacity: 0.8,
+      color: '#64FDCF',
+      weight: 3,
+      magn: mags[i],
+      depth: depth[i],
+      opacity: 0.9,
+      fillOpacity: 0.4,
       fillColor: (234, 34, 0),
     });
 
     var place = row[13].substr(1);
-
     // make new labeled markers at lat, lon, 
-    quakes[i].addTo(map).on('click', function(e) {
-      details = createDiv('');
-      details.id("bottom");
-      details.position(0, windowHeight * 0.65);
-      drawLine(quakes[i]);
-    });
+    quakes[i].on('mouseover', function(e) {
+      var string = "<p> This is my paragraph, time is: " + e.target.options.magn + "and the depth is " + e.target.options.depth;
+      $(".there").html(string);
+      string.style("font-size", "30px");
+      
+    }).on('mouseout', function(e) {
+      checker = false;
+      checker1 = false;
+      checker2 = false;
+      checker3 = false;
+      checker4 = false;
+    }).addTo(mapp).setRadius(19);
+
+    // on('mouseover', function(e) {
+    //   details.removeClass("notThere");
+    //   details.class("there");
+    // }).on('mouseout', function(e) {
+    //   details.removeClass("there");
+    //   details.class("notThere");
+    // }).
+
   }
 }
-
-function parseAll(data) {
-  for (var i = 1; i < data.length; i++) {
-    var row = split(data[i], ","); // split every row by the comma
-    allMags[i] = row[4];
-    allDepth[i] = row[3];
-    timeStampAll[i] = row[0];
-
-    quakeDateAll[i] = new Date(timeStamp[i]).getDate();
-    quakeHourAll[i] = new Date(timeStamp[i]).getHours();
-    // create custom leaflet marker
-    allDepth
-    var place = row[13].substr(1);
-
-  }
-
-}
-
-function drawLine(quake, allQuakes, time) {
-  fill(82, 82, 82);
-  strokeWeight(3);
-  //body lines
-  line(width * 0.25, height * 0.82, width * 0.75, height * 0.82);
-  var mags = map(quake, 0, 10, height * 0.82, height * 0.85);
-  var magsAll = map(allQuakes, 0, 10, height * 0.82, height * 0.85);
-  var time = map(quakeDate, 1, 31, width * 0.25, width * 0.75);
-  for (var j in quake){
-    line()
-  }
-}
-
-
 
 
 // init leaflet using a custom mapbox
 function initLeaflet() {
   // your access token here
   L.mapbox.accessToken = 'pk.eyJ1IjoiY3Jvb2tvb2tvbyIsImEiOiJoSWZlQWhnIn0.BZsl4HSikEgkLjem-3Y8CQ';
-  map = L.mapbox.map('map', 'mapbox.light').setView([20, 0], 2);
+  mapp = L.mapbox.map('mapp', 'mapbox.dark').setView([-3, 5], 2);
 
   function onMapClick(e) {
     // leaflet needs this function, no need to do anything here
-
   }
-
-  map.on('click', onMapClick);
+  mapp.on('click', onMapClick);
 }
